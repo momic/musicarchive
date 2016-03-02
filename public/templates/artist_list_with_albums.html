@@ -1,0 +1,45 @@
+<uib-accordion close-others="true">
+	<uib-accordion-group ng-repeat="record in musicArray">
+		<uib-accordion-heading>
+			<div class="row">
+  				<div class="container">
+				    <div class="col-lg-1">
+				      <img src="{{record.image}}" width="70px"/>
+				    </div>
+				    
+				    <div class="col-lg-3 text-center">
+				    	<h3><small>{{record.artist}}</small></h3>
+				    </div>
+				    <div class="col-lg-2 text-left">
+				        <h5><small>Active from: </small>{{record.musician_from}}</h5>  
+				        <h5><small>Active until: </small>-</h5>      
+				        <h5><small>Albums count: </small>{{record.albums.length}}</h5>      
+				    </div>
+				</div>
+			</div>
+		</uib-accordion-heading>
+
+		<!-- actions -->
+	    <div class="text-right">
+	    	Actions:
+	    	<button ng-click="deleteArtist(record.id)"><a>Delete</a></button>
+	    	<a href="#artists/{{record.id}}"><button>Edit</button></a>
+	    </div>
+
+		<!-- albums -->
+		<table ng-show="{{record.albums.length}}" class="table table-bordered">
+			<tr>
+				<th colspan="2" class="text-center"><p>Albums</p></th>
+			</tr>			
+			<tr>
+				<th class="col-lg-2 text-center">Title</th>
+				<th class="col-lg-1 text-center">Released</th>
+			</tr>			
+			<tr ng-repeat="album in record.albums">
+				<td class="text-center">{{album.title}}</td>
+				<td class="text-center">{{album.released.split(' ')[0]}}</td>
+			</tr>
+		</table>
+	</uib-accordion-group>
+</uib-accordion>
+<uib-pagination total-items="totalItems" items-per-page="itemsPerPage" ng-model="currentPage" ng-change="pageChanged()"/>

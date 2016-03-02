@@ -1,0 +1,43 @@
+<form name="insertForm">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th colspan="2" class="text-center">Music data</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-right">Artist:</td>
+                <td class="text-left">
+                    <input type="text" name="artist" ng-model="music_record.artist" size="31" required>
+                    <i ng-show="insertForm.artist.$error.required">*required</i>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">Image:</td>
+                <td class="text-left">
+                    <input type="file" ngf-select ng-model="artistFile" name="file" value="Upload"
+                           accept="image/*" ngf-max-size="2MB" ngf-model-invalid="errorFiles">
+                    <i ng-show="insertForm.file.$error.maxSize">
+                        File too large {{errorFiles[0].size / 1000000 | number:1}}MB: max 2M
+                    </i>
+                    <br/>
+                    <img ng-show="insertForm.file.$valid" ngf-thumbnail="artistFile" class="thumb">
+                    <button ng-click="artistFile = null" ng-show="artistFile">Remove</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">Active from:</td>
+                <td class="text-left">
+                    <input type="text" name="musicianFrom" ng-model="music_record.musician_from" size="31" required>
+                    <i ng-show="insertForm.musicianFrom.$error.required">*required</i>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-right">
+                    <button ng-disabled="!insertForm.$valid" ng-click="addMusicRecord(picFile)">Save</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>

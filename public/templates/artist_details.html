@@ -1,0 +1,22 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th colspan="2" style="text-align: center">Artist details</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="text-right">Artist:</td>
+            <td class="text-left"><input type="text" ng-model="artistDetails.artist" size="31" readonly></td>
+        </tr>
+        <tr>
+            <td class="text-right">Image:</td>
+            <td class="text-left"><img src="{{artistDetails.image}}" width="70"/></td>
+        </tr>
+        <tr>
+            <td class="text-right">Active from:</td>
+            <td class="text-left"><input type="text" ng-model="artistDetails.musician_from" size="31" readonly>
+        </tr>
+        <input type="hidden" ng-model="artistDetails.id" readonly>
+    </tbody>
+</table>
