@@ -24,7 +24,7 @@ app.config(['$routeProvider',
 app.controller("insertMusicController", function ($scope, $http, Upload, $location, $log) {
     $scope.addMusicRecord = function () {
         Upload.upload({
-          url: '/artists',
+          url: 'api/artists',
           method: 'POST',
           file: $scope.artistFile,
           sendFieldsAs: 'form',
@@ -39,20 +39,20 @@ app.controller("listOfRecordsMusicController", function ($scope, $http, $log, $r
     $scope.deleteArtist = function (id) {
         $http({
            method: "DELETE",
-           url: "/artists/" + id
+           url: "api/artists/" + id
         }).then(function successCallback(response) {
             $route.reload();
         }, function errorCallback(response) {
             $log.log('Error deleting artist');
         });
-    }
+    };
 
     $scope.pageChanged = function() {
         $log.log('Page changed to: ' + $scope.currentPage);
 
         $http({
            method: "GET",
-           url: "/artists?page=" + $scope.currentPage
+           url: "api/artists?page=" + $scope.currentPage
         }).then(function successCallback(response) {            
             $scope.totalItems = response.data.total;
             $scope.itemsPerPage = response.data.per_page;
@@ -73,11 +73,11 @@ app.controller("listOfRecordsMusicController", function ($scope, $http, $log, $r
 app.controller("detailsMusicController", function ($scope, $routeParams, $http) {
     $http({
        method: "GET",
-       url: "/artists/" + $routeParams.artistId
+       url: "api/artists/" + $routeParams.artistId
     }).then(function successCallback(response) {
-        $scope.artistDetails = response.data;
+        $scope.artistDetails = response.data.data;
     }, function errorCallback(response) {
-       console.log("Greska");
+       console.log("Error");
     });    
 });
 

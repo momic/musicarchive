@@ -11,11 +11,13 @@
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-});
+use App\Http\Controllers\API;
 
-Route::resource('artists', 'ArtistsController');
+$api = app('Dingo\Api\Routing\Router');
+
+$api->version('v1', function ($api) {
+    $api->resource('artists', API\ArtistsController::class);
+});
 
 
 
@@ -31,5 +33,9 @@ Route::resource('artists', 'ArtistsController');
 */
 
 Route::group(['middleware' => ['web']], function () {
-    //
+    Route::get('/', function () {
+        return view('index');
+    });
+    Route::get('angular', 'AngularController@index');
+    Route::get('react', 'ReactController@index');
 });

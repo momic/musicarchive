@@ -1,44 +1,37 @@
 <?php
 
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
-use Validator;
+namespace App\Http\Controllers\API;
 
 use App\Artist;
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Transformers\ArtistTransformer;
+use Dingo\Api\Http\Response;
+use Dingo\Api\Routing\Helpers;
+use Illuminate\Http\Request;
 
 class ArtistsController extends Controller
 {
+    use Helpers;
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function index()
+    public function index(): Response
     {
-        return Artist::with(['albums' => function($query) {
+        $paginator = Artist::with(['albums' => function($query) {
             $query->orderBy('released', 'desc');
-        }])->paginate(3)->toJson();
-    }
+        }])->paginate(3);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        // Create Form page will be implemented in One Page App on fronted
+        return $this->response->paginator($paginator, new ArtistTransformer());
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * 
+     * @param Request $request
+     * @return Response|\Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -55,14 +48,14 @@ class ArtistsController extends Controller
         if ($request->hasFile('file')) {
             $image = $request->file('file'); //Input::file('file');
             if (!$image->move(public_path('img'), $filename)) {
-                 abort(400, 'Error saving the file');
+                 $this->response->errorInternal('Error saving the file');
             }
         }
 
         $artist = Artist::where('artist', $request->artist)->first();
         if (empty($artist)) {
             // create new
-            Artist::create(['artist' => $request->artist, 'image' => 'img/' . $filename, 'musician_from' => $request->musician_from]);
+            $artist = Artist::create(['artist' => $request->artist, 'image' => 'img/' . $filename, 'musician_from' => $request->musician_from]);
         }
         else {
             // update existing
@@ -71,40 +64,29 @@ class ArtistsController extends Controller
             $artist->save();
         }
 
-        return response()->json(['success' => true], 200);
+        return $this->response->created('/angular#/artists/' . $artist->id, $artist);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return Response
      */
     public function show($id)
     {
-        //
-        return Artist::with(['albums' => function($query) {
+        $artist = Artist::with(['albums' => function($query) {
             $query->orderBy('released', 'desc');
-        }])->findOrFail($id)->toJson();
-    }
+        }])->findOrFail($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return $this->response->item($artist, new ArtistTransformer());
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
      */
     public function update(Request $request, $id)
     {
@@ -114,12 +96,14 @@ class ArtistsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return Response
      */
     public function destroy($id)
     {
         //TODO: delete albums and songs
         Artist::destroy($id);
+
+        return $this->response->noContent();
     }
 }
